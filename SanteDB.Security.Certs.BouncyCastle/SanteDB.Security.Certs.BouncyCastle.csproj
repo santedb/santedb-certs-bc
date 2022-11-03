@@ -1,0 +1,69 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+  </PropertyGroup>
+
+  
+  <Choose>
+    <When Condition="$(SolutionName.Contains('-ext'))">
+      <ItemGroup>
+        <ProjectReference Include="..\..\santedb-api\SanteDB.Core.Api\SanteDB.Core.Api.csproj" />
+        <ProjectReference Include="..\..\santedb-applets\SanteDB.Core.Applets\SanteDB.Core.Applets.csproj" />
+        <ProjectReference Include="..\..\santedb-restsvc\SanteDB.Core.Model.AMI\SanteDB.Core.Model.AMI.csproj" />
+        <ProjectReference Include="..\..\santedb-restsvc\SanteDB.Rest.Common\SanteDB.Rest.Common.csproj" />
+        <ProjectReference Include="..\..\santedb-restsvc\SanteDB.Rest.WWW\SanteDB.Rest.WWW.csproj" />
+        <ProjectReference Include="..\..\santedb-restsvc\SanteDB.Rest.HDSI\SanteDB.Rest.HDSI.csproj" />
+        <ProjectReference Include="..\..\santedb-restsvc\SanteDB.Rest.AMI\SanteDB.Rest.AMI.csproj" />
+        <ProjectReference Include="..\..\santedb-restsvc\SanteDB.Rest.OAuth\SanteDB.Rest.OAuth.csproj" />
+        <ProjectReference Include="..\..\santedb-bis\SanteDB.Rest.BIS\SanteDB.Rest.BIS.csproj" />
+
+      </ItemGroup>
+    </When>
+    <Otherwise>
+      <ItemGroup>
+        <PackageReference Include="SanteDB.Core.Api" Version="$(VersionNumber)" />
+        <PackageReference Include="SanteDB.Core.Applets" Version="$(VersionNumber)" />
+        <PackageReference Include="SanteDB.Core.Model.AMI" Version="$(VersionNumber)" />
+        <PackageReference Include="SanteDB.Rest.Common" Version="$(VersionNumber)" />
+        <PackageReference Include="SanteDB.Rest.WWW" Version="$(VersionNumber)" />
+        <PackageReference Include="SanteDB.Rest.HDSI" Version="$(VersionNumber)" />
+        <PackageReference Include="SanteDB.Rest.AMI" Version="$(VersionNumber)" />
+        <PackageReference Include="SanteDB.Rest.BIS" Version="$(VersionNumber)" />
+        <PackageReference Include="SanteDB.Rest.OAuth" Version="$(VersionNumber)" />
+      </ItemGroup>
+    </Otherwise>
+  </Choose>
+
+
+  <PropertyGroup Condition="'$(VersionNumber)' == ''">
+    <VersionNumber>3.0-debug</VersionNumber>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <PackageId>SanteDB.Security.Certs.BouncyCastle</PackageId>
+    <Title>SanteDB.Security.Certs.BouncyCastle</Title>
+    <Version>$(VersionNumber)</Version>
+    <Description>SanteDB Certificate Services using BouncyCastle</Description>
+    <Authors>SanteSuite Contributors</Authors>
+    <PackageTags>SanteDB</PackageTags>
+    <RepositoryUrl>https://github.com/santedb/santedb-certs-bc</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+    <IncludeSymbols>true</IncludeSymbols>
+    <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <Product>SanteDB</Product>
+    <Copyright>Copyright (C) 2022 SanteSuite Contributors (See: NOTICES)</Copyright>
+    <Company>SanteSuite Contributors</Company>
+    <PackageIconUrl>http://santesuite.org/assets/img/logo.png</PackageIconUrl>
+    <PackageProjectUrl>http://santesuite.org</PackageProjectUrl>
+    <RootNamespace>SanteDB.Security.Certs.BouncyCastle</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Portable.BouncyCastle" Version="1.9.0" />
+  </ItemGroup>
+
+</Project>
