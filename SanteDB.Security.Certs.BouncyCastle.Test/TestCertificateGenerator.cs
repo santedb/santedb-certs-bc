@@ -1,6 +1,7 @@
 using NUnit.Framework;
 using System;
 using System.IO;
+using System.Linq;
 using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
 
@@ -31,12 +32,10 @@ namespace SanteDB.Security.Certs.BouncyCastle.Test
         {
             var generator = new BouncyCastleCertificateGenerator();
             var keyPair = generator.CreateKeyPair(1024);
-            var csr = generator.CreateSigningRequest(keyPair, new X500DistinguishedName("CN=lumon.santesuite.net, OU=Optics and Design, C=Kier, E=admin@lumon.santesuite.net"), X509KeyUsageFlags.DataEncipherment);
-            using (var fs = File.CreateText(Path.Combine(Path.GetDirectoryName(typeof(TestCertificateGenerator).Assembly.Location), "test.csr")))
+            var csr = generator.CreateSigningRequest(keyPair, new X500DistinguishedName("CN=lumon.santesuite.net, DC=lumon, DC=santesuite.net, OID.2.5.6.11=SanteDB, OID.2.5.6.14=SomeMachine, OU=Optics and Design, C=Kier, E=admin@lumon.santesuite.net"), X509KeyUsageFlags.DataEncipherment);
+            using (var fs = File.Create(Path.Combine(Path.GetDirectoryName(typeof(TestCertificateGenerator).Assembly.Location), "test.csr")))
             {
-                fs.WriteLine("---------- BEGIN CERTIFICATE REQUEST -------------");
-                fs.WriteLine(Convert.ToBase64String(csr));
-                fs.WriteLine("---------- END CERTIFICATE REQUEST -------------");
+                fs.Write(csr, 0, csr.Length);
             }
 
         }
@@ -45,8 +44,8 @@ namespace SanteDB.Security.Certs.BouncyCastle.Test
         public void TestCanGenerateSelfSignedCertificate()
         {
             var generator = new BouncyCastleCertificateGenerator();
-            var keyPair = generator.CreateKeyPair(1024);
-            var selfSignedCertificate = generator.CreateSelfSignedCertificate(keyPair, new X500DistinguishedName("CN=lumon.santesuite.net, OU=Macrodata Refinement, C=Kier, E=admin@lumon.santesuite.net"), new System.TimeSpan(1, 0, 0, 0), X509KeyUsageFlags.DataEncipherment);
+            var keyPair = generator.CreateKeyPair(2048);
+            var selfSignedCertificate = generator.CreateSelfSignedCertificate(keyPair, new X500DistinguishedName("CN=lumon.santesuite.net, DC=lumon, DC=santesuite.net, OID.2.5.6.11=SanteDB, OID.2.5.6.14=SomeMachine, OU=Macrodata Refinement, C=Kier, E=admin@lumon.santesuite.net"), new System.TimeSpan(1, 0, 0, 0), X509KeyUsageFlags.DigitalSignature | X509KeyUsageFlags.DataEncipherment | X509KeyUsageFlags.KeyAgreement, friendlyName: $"Lumon Industries Test Certificate");
             Assert.IsTrue(selfSignedCertificate.HasPrivateKey);
 
             using (var rsa = selfSignedCertificate.GetRSAPrivateKey())
