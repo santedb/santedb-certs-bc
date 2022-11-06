@@ -80,7 +80,7 @@ namespace SanteDB.Security.Certs.BouncyCastle
                             {
                                 var rootCa = BouncyUtils.CreateSelfSignedCertificate(subjectDn, new string[0], keyPair, new TimeSpan(7300, 0, 0, 0), X509KeyUsageFlags.DigitalSignature | X509KeyUsageFlags.KeyCertSign | X509KeyUsageFlags.CrlSign, true, null);
                                 certificate = BouncyUtils.ConvertToX509Certificate2(o.FrienlyName, rootCa, keyPair.Private);
-                                X509CertificateUtils.InstallCertificate(StoreLocation.CurrentUser, StoreName.Root, certificate);
+                                X509CertificateUtils.InstallCertificate(StoreName.Root, certificate);
                             }
                             else
                             {
@@ -92,7 +92,7 @@ namespace SanteDB.Security.Certs.BouncyCastle
                                     var immCa = BouncyUtils.SignCertificateRequest(immCsr, new TimeSpan(3650, 0, 0, 0), issuerKey, issuerCert, BouncyCastleCertificateSignPurpose.CertificateAuthority);
                                     certificate = BouncyUtils.ConvertToX509Certificate2(o.FrienlyName, immCa, keyPair.Private);
                                 }
-                                X509CertificateUtils.InstallCertificate(StoreLocation.CurrentUser, StoreName.CertificateAuthority, certificate);
+                                X509CertificateUtils.InstallCertificate(StoreName.CertificateAuthority, certificate);
                             }
                         }
 
