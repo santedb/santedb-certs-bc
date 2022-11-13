@@ -75,7 +75,7 @@ namespace SanteDB.Security.Certs.BouncyCastle
             extensions.Add(X509Extensions.ExtendedKeyUsage, new Org.BouncyCastle.Asn1.X509.X509Extension(false, new DerOctetString(new ExtendedKeyUsage(BouncyUtils.GetKeyPurposes(extendedKeyUsages).ToArray()))));
             extensions.Add(X509Extensions.KeyUsage, new Org.BouncyCastle.Asn1.X509.X509Extension(false, new DerOctetString( new KeyUsage(BouncyUtils.ConvertUsages(usageFlags)))));
             extensions.Add(X509Extensions.BasicConstraints, new Org.BouncyCastle.Asn1.X509.X509Extension(true, new DerOctetString(new BasicConstraints(isCa))));
-            if (alternateNames.Any())
+            if (alternateNames?.Any() == true)
             {
                 extensions.Add(X509Extensions.SubjectAlternativeName, new Org.BouncyCastle.Asn1.X509.X509Extension(false, new DerOctetString(new DerSequence(alternateNames.Select(o => new GeneralName(IPAddress.TryParse(o, out _) ? GeneralName.IPAddress : GeneralName.DnsName, o)).ToArray()))));
             }
