@@ -18,5 +18,8 @@ namespace SanteDB.Security.Certs.BouncyCastle.Configuration
         /// </summary>
         [XmlAttribute("purpose"), JsonProperty("purpose")]
         public BouncyCastleCertificateSignPurpose Purpose { get; set; }
+
+        /// <inheritdoc/>
+        public override string ToString() => $"{this.Purpose}: {base.ToString()}";
     }
 }

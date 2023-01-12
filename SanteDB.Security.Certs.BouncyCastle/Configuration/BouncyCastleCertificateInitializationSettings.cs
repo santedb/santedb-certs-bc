@@ -128,5 +128,9 @@ namespace SanteDB.Security.Certs.BouncyCastle.Configuration
             }
             return new X500DistinguishedName(sb.ToString().Substring(2));
         }
+
+        /// <inheritdoc/>
+        public override string ToString() => $"{this.Purpose}: {this.ToDistinguishedName().Name}";
+
     }
 }
