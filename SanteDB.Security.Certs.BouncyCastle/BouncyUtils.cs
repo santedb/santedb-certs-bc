@@ -41,6 +41,8 @@ using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
 
+#pragma warning disable CS0618
+
 namespace SanteDB.Security.Certs.BouncyCastle
 {
     /// <summary>
@@ -280,3 +282,4 @@ namespace SanteDB.Security.Certs.BouncyCastle
 
     }
 }
+#pragma warning restore
