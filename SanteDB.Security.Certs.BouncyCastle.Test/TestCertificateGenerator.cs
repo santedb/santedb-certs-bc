@@ -20,6 +20,7 @@
  */
 using NUnit.Framework;
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
@@ -28,6 +29,7 @@ using System.Security.Cryptography.X509Certificates;
 namespace SanteDB.Security.Certs.BouncyCastle.Test
 {
     [TestFixture]
+    [ExcludeFromCodeCoverage]
     public class TestCertificateGenerator
     {
 

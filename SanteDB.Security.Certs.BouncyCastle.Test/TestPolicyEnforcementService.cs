@@ -18,11 +18,14 @@
  * User: fyfej
  * Date: 2023-3-10
  */
+
+using System.Diagnostics.CodeAnalysis;
 using SanteDB.Core.Security.Services;
 using System.Security.Principal;
 
 namespace SanteDB.Security.Certs.BouncyCastle.Test
 {
+    [ExcludeFromCodeCoverage]
     internal class TestPolicyEnforcementService : IPolicyEnforcementService
     {
         public string ServiceName => "Test PEP - IF YOU SEE THIS IN PRODUCTION CHANGE IT!";
