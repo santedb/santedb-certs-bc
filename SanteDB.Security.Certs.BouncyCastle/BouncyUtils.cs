@@ -30,7 +30,9 @@ using Org.BouncyCastle.Pkcs;
 using Org.BouncyCastle.Security;
 using Org.BouncyCastle.Utilities;
 using Org.BouncyCastle.X509;
+using SanteDB.Core;
 using SanteDB.Core.i18n;
+using SanteDB.Core.Services;
 using SanteDB.Security.Certs.BouncyCastle.Configuration;
 using System;
 using System.Collections.Generic;
@@ -54,6 +56,11 @@ namespace SanteDB.Security.Certs.BouncyCastle
         /// The signature algorithm used by this generator
         /// </summary>
         public const string SIGNATURE_ALGORITHM = "SHA256WithRSA";
+
+        /// <summary>
+        /// Get operating system information
+        /// </summary>
+        private static IOperatingSystemInfoService GetOperatingSystemInfoService() => ApplicationServiceContext.Current.GetService<IOperatingSystemInfoService>();
 
         internal static Org.BouncyCastle.X509.X509Certificate CreateSelfSignedCertificate(X509Name subjectDn, String[] alternateNames, AsymmetricCipherKeyPair keyPair, TimeSpan validityPeriod, X509KeyUsageFlags usageFlags, bool isCaCertificate, KeyPurposeID[] extendedKeyPurposes)
         {
@@ -241,7 +248,6 @@ namespace SanteDB.Security.Certs.BouncyCastle
         /// <param name="privateKey">The private key</param>
         internal static X509Certificate2 ConvertToX509Certificate2(String friendlyName, Org.BouncyCastle.X509.X509Certificate certificate, AsymmetricKeyParameter privateKey)
         {
-            var password = Guid.NewGuid().ToString();
             var randomGenerator = new CryptoApiRandomGenerator();
             var random = new SecureRandom(randomGenerator);
             var pfx = new Pkcs12Store();
@@ -253,15 +259,16 @@ namespace SanteDB.Security.Certs.BouncyCastle
             }
             using (var ms = new MemoryStream())
             {
-                pfx.Save(ms, password.ToCharArray(), random);
-                //ms.Seek(0, SeekOrigin.Begin);
-                try
-                {
-                    return new X509Certificate2(ms.ToArray(), password, X509KeyStorageFlags.PersistKeySet | X509KeyStorageFlags.Exportable | X509KeyStorageFlags.DefaultKeySet);
+                if(GetOperatingSystemInfoService()?.OperatingSystem == OperatingSystemID.Android) { 
+                    pfx.Save(ms, null, random);
+                    ms.Seek(0, SeekOrigin.Begin);
+                    return new X509Certificate2(ms.ToArray(), string.Empty, X509KeyStorageFlags.Exportable);
                 }
-                catch (PlatformNotSupportedException)
-                {
-                    return new X509Certificate2(ms.ToArray(), password, X509KeyStorageFlags.Exportable);
+                else { 
+                    var password = Guid.NewGuid().ToString();
+                    pfx.Save(ms, password.ToCharArray(), random);
+                    ms.Seek(0, SeekOrigin.Begin);
+                    return new X509Certificate2(ms.ToArray(), password, X509KeyStorageFlags.PersistKeySet | X509KeyStorageFlags.Exportable | X509KeyStorageFlags.DefaultKeySet);
                 }
             }
         }
