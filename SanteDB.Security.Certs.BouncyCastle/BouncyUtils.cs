@@ -253,9 +253,16 @@ namespace SanteDB.Security.Certs.BouncyCastle
             }
             using (var ms = new MemoryStream())
             {
-                pfx.Save(ms, password.ToCharArray(), random);
-                ms.Seek(0, SeekOrigin.Begin);
-                return new X509Certificate2(ms.ToArray(), password, X509KeyStorageFlags.PersistKeySet | X509KeyStorageFlags.Exportable | X509KeyStorageFlags.DefaultKeySet);
+                pfx.Save(ms, null, random);
+                //ms.Seek(0, SeekOrigin.Begin);
+                try
+                {
+                    return new X509Certificate2(ms.ToArray(), string.Empty, X509KeyStorageFlags.PersistKeySet | X509KeyStorageFlags.Exportable | X509KeyStorageFlags.DefaultKeySet);
+                }
+                catch (PlatformNotSupportedException)
+                {
+                    return new X509Certificate2(ms.ToArray(), string.Empty, X509KeyStorageFlags.Exportable);
+                }
             }
         }
 
