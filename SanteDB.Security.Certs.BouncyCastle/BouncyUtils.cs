@@ -262,7 +262,7 @@ namespace SanteDB.Security.Certs.BouncyCastle
                 if(GetOperatingSystemInfoService()?.OperatingSystem == OperatingSystemID.Android) { 
                     pfx.Save(ms, null, random);
                     ms.Seek(0, SeekOrigin.Begin);
-                    return new X509Certificate2(ms.ToArray(), string.Empty, X509KeyStorageFlags.PersistKeySet | X509KeyStorageFlags.Exportable);
+                    return new X509Certificate2(ms.ToArray(), string.Empty, X509KeyStorageFlags.PersistKeySet | X509KeyStorageFlags.Exportable | X509KeyStorageFlags.DefaultKeySet);
                 }
                 else { 
                     var password = Guid.NewGuid().ToString();
