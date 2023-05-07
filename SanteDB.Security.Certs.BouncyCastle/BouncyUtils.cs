@@ -85,10 +85,10 @@ namespace SanteDB.Security.Certs.BouncyCastle
                 certificateGenerator.AddExtension(X509Extensions.ExtendedKeyUsage.Id, false, new ExtendedKeyUsage(extendedKeyPurposes));
             }
             certificateGenerator.AddExtension(X509Extensions.AuthorityKeyIdentifier.Id, false, new AuthorityKeyIdentifier(SubjectPublicKeyInfoFactory.CreateSubjectPublicKeyInfo(keyPair.Public), new GeneralNames(new GeneralName(subjectDn)), serialNumber));
-            certificateGenerator.AddExtension(X509Extensions.SubjectKeyIdentifier.Id, false, new AuthorityKeyIdentifier(SubjectPublicKeyInfoFactory.CreateSubjectPublicKeyInfo(keyPair.Public)));
+            certificateGenerator.AddExtension(X509Extensions.SubjectKeyIdentifier.Id, false, new SubjectKeyIdentifier(SubjectPublicKeyInfoFactory.CreateSubjectPublicKeyInfo(keyPair.Public)));
             certificateGenerator.AddExtension(X509Extensions.BasicConstraints.Id, false, new BasicConstraints(isCaCertificate));
 
-            if(alternateNames?.Any() == true)
+            if (alternateNames?.Any() == true)
             {
                 certificateGenerator.AddExtension(X509Extensions.SubjectAlternativeName.Id, false, new DerSequence(alternateNames.Select(o=>new GeneralName(IPAddress.TryParse(o, out _) ? GeneralName.IPAddress : GeneralName.DnsName, o)).ToArray()));
             }
