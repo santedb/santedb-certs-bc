@@ -47,15 +47,17 @@ namespace SanteDB.Security.Certs.BouncyCastle
         private readonly Tracer m_tracer = Tracer.GetTracer(typeof(BouncyCastleCertificateSigner));
         private readonly BouncyCastleConfigurationSection m_configuration;
         private readonly IPolicyEnforcementService m_pepService;
+        private readonly IPlatformSecurityProvider m_platformSecurityService;
         private readonly Dictionary<BouncyCastleCertificateSignPurpose, X509Certificate2> m_signingCertificates = new Dictionary<BouncyCastleCertificateSignPurpose, X509Certificate2>();
 
         /// <summary>
         /// DI Constructor
         /// </summary>
-        public BouncyCastleCertificateSigner(IConfigurationManager configurationManager, IPolicyEnforcementService policyEnforcement)
+        public BouncyCastleCertificateSigner(IConfigurationManager configurationManager, IPolicyEnforcementService policyEnforcement, IPlatformSecurityProvider platformSecurityProvider)
         {
             this.m_configuration = configurationManager.GetSection<BouncyCastleConfigurationSection>();
             this.m_pepService = policyEnforcement;
+            this.m_platformSecurityService = platformSecurityProvider;
         }
 
         /// <summary>
@@ -86,12 +88,7 @@ namespace SanteDB.Security.Certs.BouncyCastle
                 {
                     this.m_configuration.GenerateCertificates.ForEach(o =>
                     {
-                        X509Certificate2 certificate = null;
-                        try
-                        {
-                            certificate = X509CertificateUtils.FindCertificate(X509FindType.FindBySubjectDistinguishedName, StoreLocation.LocalMachine, StoreName.My, o.ToDistinguishedName().Name);
-                        }
-                        catch (FileNotFoundException)
+                        if(!this.m_platformSecurityService.TryGetCertificate(X509FindType.FindByIssuerDistinguishedName, o.ToDistinguishedName(), out var certificate))
                         {
                             this.m_tracer.TraceInfo("Will generate new certificate {0}", o.ToDistinguishedName());
                             var subjectDn = BouncyUtils.ConvertDN(o.ToDistinguishedName());
@@ -100,7 +97,7 @@ namespace SanteDB.Security.Certs.BouncyCastle
                             {
                                 var rootCa = BouncyUtils.CreateSelfSignedCertificate(subjectDn, new string[0], keyPair, new TimeSpan(7300, 0, 0, 0), X509KeyUsageFlags.DigitalSignature | X509KeyUsageFlags.KeyCertSign | X509KeyUsageFlags.CrlSign, true, null);
                                 certificate = BouncyUtils.ConvertToX509Certificate2(o.FrienlyName, rootCa, keyPair.Private);
-                                X509CertificateUtils.InstallCertificate(StoreName.Root, certificate);
+                                _ = this.m_platformSecurityService.TryInstallCertificate(certificate, storeName: StoreName.Root);
                             }
                             else
                             {
@@ -112,7 +109,7 @@ namespace SanteDB.Security.Certs.BouncyCastle
                                     var immCa = BouncyUtils.SignCertificateRequest(immCsr, new TimeSpan(3650, 0, 0, 0), issuerKey, issuerCert, BouncyCastleCertificateSignPurpose.CertificateAuthority);
                                     certificate = BouncyUtils.ConvertToX509Certificate2(o.FrienlyName, immCa, keyPair.Private);
                                 }
-                                X509CertificateUtils.InstallCertificate(StoreName.CertificateAuthority, certificate);
+                                _ = this.m_platformSecurityService.TryInstallCertificate(certificate, storeName: StoreName.CertificateAuthority);
                             }
                         }
 
