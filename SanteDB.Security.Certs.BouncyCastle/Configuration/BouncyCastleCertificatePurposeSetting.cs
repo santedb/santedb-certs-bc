@@ -20,9 +20,6 @@
  */
 using Newtonsoft.Json;
 using SanteDB.Core.Security.Configuration;
-using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Xml.Serialization;
 
 namespace SanteDB.Security.Certs.BouncyCastle.Configuration

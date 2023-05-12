@@ -84,7 +84,7 @@ namespace SanteDB.Security.Certs.BouncyCastle.Configuration
         /// </summary>
         [XmlAttribute("cn"), JsonProperty("cn")]
         public string CommonName { get; set; }
-        
+
         /// <summary>
         /// Gets the OU
         /// </summary>
@@ -122,7 +122,7 @@ namespace SanteDB.Security.Certs.BouncyCastle.Configuration
         public X500DistinguishedName ToDistinguishedName()
         {
             StringBuilder sb = new StringBuilder();
-            if(!string.IsNullOrEmpty(this.CommonName))
+            if (!string.IsNullOrEmpty(this.CommonName))
             {
                 sb.AppendFormat(", CN={0}", this.CommonName);
             }

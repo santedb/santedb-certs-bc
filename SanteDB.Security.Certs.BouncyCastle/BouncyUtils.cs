@@ -39,9 +39,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
-using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
-using System.Text;
 
 #pragma warning disable CS0618
 
@@ -76,7 +74,7 @@ namespace SanteDB.Security.Certs.BouncyCastle
             certificateGenerator.SetNotAfter(DateTime.UtcNow.Add(validityPeriod));
             certificateGenerator.SetPublicKey(keyPair.Public);
             var uses = ConvertUsages(usageFlags);
-            if(uses > 0)
+            if (uses > 0)
             {
                 certificateGenerator.AddExtension(X509Extensions.KeyUsage.Id, false, new KeyUsage(uses));
             }
@@ -90,7 +88,7 @@ namespace SanteDB.Security.Certs.BouncyCastle
 
             if (alternateNames?.Any() == true)
             {
-                certificateGenerator.AddExtension(X509Extensions.SubjectAlternativeName.Id, false, new DerSequence(alternateNames.Select(o=>new GeneralName(IPAddress.TryParse(o, out _) ? GeneralName.IPAddress : GeneralName.DnsName, o)).ToArray()));
+                certificateGenerator.AddExtension(X509Extensions.SubjectAlternativeName.Id, false, new DerSequence(alternateNames.Select(o => new GeneralName(IPAddress.TryParse(o, out _) ? GeneralName.IPAddress : GeneralName.DnsName, o)).ToArray()));
             }
             return certificateGenerator.Generate(keyPair.Private, random);
         }
@@ -102,7 +100,7 @@ namespace SanteDB.Security.Certs.BouncyCastle
         {
             var extensions = new Dictionary<DerObjectIdentifier, Org.BouncyCastle.Asn1.X509.X509Extension>();
             extensions.Add(X509Extensions.ExtendedKeyUsage, new Org.BouncyCastle.Asn1.X509.X509Extension(false, new DerOctetString(new ExtendedKeyUsage(BouncyUtils.GetKeyPurposes(extendedKeyUsages).ToArray()))));
-            extensions.Add(X509Extensions.KeyUsage, new Org.BouncyCastle.Asn1.X509.X509Extension(false, new DerOctetString( new KeyUsage(BouncyUtils.ConvertUsages(usageFlags)))));
+            extensions.Add(X509Extensions.KeyUsage, new Org.BouncyCastle.Asn1.X509.X509Extension(false, new DerOctetString(new KeyUsage(BouncyUtils.ConvertUsages(usageFlags)))));
             extensions.Add(X509Extensions.BasicConstraints, new Org.BouncyCastle.Asn1.X509.X509Extension(true, new DerOctetString(new BasicConstraints(isCa))));
             if (alternateNames?.Any() == true)
             {
@@ -118,7 +116,7 @@ namespace SanteDB.Security.Certs.BouncyCastle
         /// </summary>
         internal static Org.BouncyCastle.X509.X509Certificate SignCertificateRequest(Pkcs10CertificationRequest csrRequest, TimeSpan validityPeriod, AsymmetricCipherKeyPair issuerKeyPair, Org.BouncyCastle.X509.X509Certificate issuerCertificate, BouncyCastleCertificateSignPurpose issuerUses)
         {
-            if(csrRequest.Verify())
+            if (csrRequest.Verify())
             {
                 throw new InvalidOperationException(ErrorMessages.CERTIFICATE_REQ_NOT_VALID);
             }
@@ -142,7 +140,7 @@ namespace SanteDB.Security.Certs.BouncyCastle
             bool canSign = true;
             if (attributes != null)
             {
-                foreach(var att in attributes)
+                foreach (var att in attributes)
                 {
                     var attr = AttributePkcs.GetInstance(att);
                     if (attr.AttrType.Equals(PkcsObjectIdentifiers.Pkcs9AtExtensionRequest))
@@ -154,13 +152,13 @@ namespace SanteDB.Security.Certs.BouncyCastle
                             var value = ext.GetParsedValue();
                             certificateGenerator.AddExtension(oid, ext.IsCritical, value);
 
-                            if(oid.Equals(X509Extensions.BasicConstraints) && value is BasicConstraints bc)
+                            if (oid.Equals(X509Extensions.BasicConstraints) && value is BasicConstraints bc)
                             {
                                 canSign &= bc.IsCA() && issuerUses.HasFlag(BouncyCastleCertificateSignPurpose.CertificateAuthority) || !bc.IsCA();
                             }
-                            else if(oid.Equals(X509Extensions.ExtendedKeyUsage) && value is ExtendedKeyUsage eku)
+                            else if (oid.Equals(X509Extensions.ExtendedKeyUsage) && value is ExtendedKeyUsage eku)
                             {
-                                foreach(KeyPurposeID kpi in eku.GetAllUsages())
+                                foreach (KeyPurposeID kpi in eku.GetAllUsages())
                                 {
                                     canSign &= (!kpi.Equals(KeyPurposeID.IdKPServerAuth) ^ issuerUses.HasFlag(BouncyCastleCertificateSignPurpose.ServerAuth)) &&
                                         (!kpi.Equals(KeyPurposeID.IdKPClientAuth) ^ issuerUses.HasFlag(BouncyCastleCertificateSignPurpose.ClientAuth)) &&
@@ -177,7 +175,7 @@ namespace SanteDB.Security.Certs.BouncyCastle
                 }
             }
 
-            if(!canSign)
+            if (!canSign)
             {
                 throw new InvalidOperationException(ErrorMessages.CERTIFICATE_REQ_CANT_SIGN);
             }
@@ -196,9 +194,9 @@ namespace SanteDB.Security.Certs.BouncyCastle
         {
             if (request[0] == (byte)'-') // PEM
             {
-                using(var ms = new MemoryStream(request))
+                using (var ms = new MemoryStream(request))
                 {
-                    using(var sr = new StreamReader(ms))
+                    using (var sr = new StreamReader(ms))
                     {
                         var reader = new PemReader(sr);
                         return (Pkcs10CertificationRequest)reader.ReadObject();
@@ -216,7 +214,7 @@ namespace SanteDB.Security.Certs.BouncyCastle
         /// </summary>
         internal static IEnumerable<KeyPurposeID> GetKeyPurposes(String[] extendedKeyUsages)
         {
-            if(extendedKeyUsages == null)
+            if (extendedKeyUsages == null)
             {
                 yield break;
             }
@@ -226,9 +224,9 @@ namespace SanteDB.Security.Certs.BouncyCastle
                 .OfType<KeyPurposeID>()
                 .ToDictionary(o => o.Id, o => o);
 
-            foreach(var itm in extendedKeyUsages)
+            foreach (var itm in extendedKeyUsages)
             {
-                if(dictPurpose.TryGetValue(itm, out var k))
+                if (dictPurpose.TryGetValue(itm, out var k))
                 {
                     yield return k;
                 }
@@ -259,12 +257,14 @@ namespace SanteDB.Security.Certs.BouncyCastle
             }
             using (var ms = new MemoryStream())
             {
-                if(GetOperatingSystemInfoService()?.OperatingSystem == OperatingSystemID.Android) { 
+                if (GetOperatingSystemInfoService()?.OperatingSystem == OperatingSystemID.Android)
+                {
                     pfx.Save(ms, null, random);
                     ms.Seek(0, SeekOrigin.Begin);
                     return new X509Certificate2(ms.ToArray(), string.Empty, X509KeyStorageFlags.PersistKeySet | X509KeyStorageFlags.Exportable | X509KeyStorageFlags.DefaultKeySet);
                 }
-                else { 
+                else
+                {
                     var password = Guid.NewGuid().ToString();
                     pfx.Save(ms, password.ToCharArray(), random);
                     ms.Seek(0, SeekOrigin.Begin);

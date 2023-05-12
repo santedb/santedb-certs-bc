@@ -24,7 +24,6 @@ using SanteDB.Core.Security.Certs;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace SanteDB.Security.Certs.BouncyCastle.Configuration
 {

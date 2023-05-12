@@ -20,7 +20,6 @@
  */
 using Org.BouncyCastle.Asn1.X509;
 using Org.BouncyCastle.Security;
-using Org.BouncyCastle.X509;
 using SanteDB.Core.Diagnostics;
 using SanteDB.Core.i18n;
 using SanteDB.Core.Security;
@@ -30,10 +29,8 @@ using SanteDB.Core.Services;
 using SanteDB.Security.Certs.BouncyCastle.Configuration;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Security.Cryptography.X509Certificates;
-using System.Text;
 
 namespace SanteDB.Security.Certs.BouncyCastle
 {
@@ -88,7 +85,7 @@ namespace SanteDB.Security.Certs.BouncyCastle
                 {
                     this.m_configuration.GenerateCertificates.ForEach(o =>
                     {
-                        if(!this.m_platformSecurityService.TryGetCertificate(X509FindType.FindByIssuerDistinguishedName, o.ToDistinguishedName(), out var certificate))
+                        if (!this.m_platformSecurityService.TryGetCertificate(X509FindType.FindByIssuerDistinguishedName, o.ToDistinguishedName(), out var certificate))
                         {
                             this.m_tracer.TraceInfo("Will generate new certificate {0}", o.ToDistinguishedName());
                             var subjectDn = BouncyUtils.ConvertDN(o.ToDistinguishedName());
@@ -150,7 +147,7 @@ namespace SanteDB.Security.Certs.BouncyCastle
             this.m_pepService.Demand(PermissionPolicyIdentifiers.IssueCertificates);
 
             var certificateSelected = this.m_signingCertificates.FirstOrDefault(o => o.Value.Thumbprint == signWithCertificate.Thumbprint);
-            if(certificateSelected.Value == null)
+            if (certificateSelected.Value == null)
             {
                 throw new InvalidOperationException(ErrorMessages.NOT_INITIALIZED);
             }

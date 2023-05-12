@@ -18,28 +18,15 @@
  * User: fyfej
  * Date: 2023-3-10
  */
-using Org.BouncyCastle.Asn1;
-using Org.BouncyCastle.Asn1.Pkcs;
 using Org.BouncyCastle.Asn1.X509;
-using Org.BouncyCastle.Crypto;
-using Org.BouncyCastle.Crypto.Generators;
 using Org.BouncyCastle.Crypto.Parameters;
-using Org.BouncyCastle.Crypto.Prng;
-using Org.BouncyCastle.Math;
-using Org.BouncyCastle.Pkcs;
 using Org.BouncyCastle.Security;
-using Org.BouncyCastle.Utilities;
-using Org.BouncyCastle.X509;
-using SanteDB.Core.Security;
 using SanteDB.Core.Security.Certs;
-using SanteDB.Core.Security.Services;
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
-using System.Text;
 
 namespace SanteDB.Security.Certs.BouncyCastle
 {
@@ -92,9 +79,9 @@ namespace SanteDB.Security.Certs.BouncyCastle
             var pkcs10 = BouncyUtils.CreateSigningRequest(subjectDn, alternateNames, keyPair, usageFlags, extendedKeyUsages, false);
             var derEncoding = pkcs10.GetDerEncoded();
 
-            using(var ms = new MemoryStream())
+            using (var ms = new MemoryStream())
             {
-                using(var tw = new StreamWriter(ms))
+                using (var tw = new StreamWriter(ms))
                 {
                     tw.WriteLine("-----BEGIN CERTIFICATE REQUEST-----");
                     var data = Convert.ToBase64String(derEncoding);
