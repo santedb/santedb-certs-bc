@@ -261,7 +261,7 @@ namespace SanteDB.Security.Certs.BouncyCastle
                 {
                     pfx.Save(ms, null, random);
                     ms.Seek(0, SeekOrigin.Begin);
-                    return new X509Certificate2(ms.ToArray(), string.Empty, X509KeyStorageFlags.PersistKeySet | X509KeyStorageFlags.Exportable | X509KeyStorageFlags.DefaultKeySet);
+                    return new X509Certificate2(ms.ToArray(), string.Empty);
                 }
                 else
                 {
