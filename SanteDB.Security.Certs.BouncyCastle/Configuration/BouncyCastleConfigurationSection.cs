@@ -63,7 +63,7 @@ namespace SanteDB.Security.Certs.BouncyCastle.Configuration
         /// </summary>
         [XmlArray("generate"), XmlArrayItem("add"), JsonProperty("generate")]
         [DisplayName("Initialization"), Description("If allowing SanteDB to initialize new signing certificates - the parameters for the certificate generation process")]
-        [TypeConverter(typeof(ExpandableObjectConverter))]
+        [TypeConverter(typeof(CollectionConverter))]
         public List<BouncyCastleCertificateInitializationSettings> GenerateCertificates { get; set; }
 
         /// <inheritdoc/>
