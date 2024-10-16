@@ -35,6 +35,14 @@ namespace SanteDB.Security.Certs.BouncyCastle.Test
         {
         }
 
+        public void DemandAll(params string[] policyIds)
+        {
+        }
+
+        public void DemandAny(params string[] policyIds)
+        {
+        }
+
         public bool SoftDemand(string policyId, IPrincipal principal) => true;
     }
 }
