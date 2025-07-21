@@ -21,6 +21,7 @@ using Org.BouncyCastle.Asn1.Pkcs;
 using Org.BouncyCastle.Asn1.X509;
 using Org.BouncyCastle.Crypto;
 using Org.BouncyCastle.Crypto.Generators;
+using Org.BouncyCastle.Crypto.Operators;
 using Org.BouncyCastle.Crypto.Prng;
 using Org.BouncyCastle.Math;
 using Org.BouncyCastle.OpenSsl;
@@ -65,7 +66,6 @@ namespace SanteDB.Security.Certs.BouncyCastle
             var certificateGenerator = new X509V3CertificateGenerator();
             var serialNumber = BigIntegers.CreateRandomInRange(BigInteger.One, BigInteger.ValueOf(Int64.MaxValue), random);
             certificateGenerator.SetSerialNumber(serialNumber);
-            certificateGenerator.SetSignatureAlgorithm(SIGNATURE_ALGORITHM);
             certificateGenerator.SetSubjectDN(subjectDn);
             certificateGenerator.SetIssuerDN(subjectDn);
             certificateGenerator.SetNotBefore(DateTime.UtcNow.Date);
@@ -88,7 +88,8 @@ namespace SanteDB.Security.Certs.BouncyCastle
             {
                 certificateGenerator.AddExtension(X509Extensions.SubjectAlternativeName.Id, false, new DerSequence(alternateNames.Select(o => new GeneralName(IPAddress.TryParse(o, out _) ? GeneralName.IPAddress : GeneralName.DnsName, o)).ToArray()));
             }
-            return certificateGenerator.Generate(keyPair.Private, random);
+
+            return certificateGenerator.Generate(new Asn1SignatureFactory(SIGNATURE_ALGORITHM, keyPair.Private, random));
         }
 
         /// <summary>
@@ -124,7 +125,6 @@ namespace SanteDB.Security.Certs.BouncyCastle
             var certificateGenerator = new X509V3CertificateGenerator();
             var serialNumber = BigIntegers.CreateRandomInRange(BigInteger.One, BigInteger.ValueOf(Int64.MaxValue), random);
             certificateGenerator.SetSerialNumber(serialNumber);
-            certificateGenerator.SetSignatureAlgorithm(csrRequest.SignatureAlgorithm.Algorithm.Id);
             certificateGenerator.SetIssuerDN(issuerCertificate.SubjectDN);
             certificateGenerator.SetNotBefore(DateTime.UtcNow.Date);
             certificateGenerator.SetNotAfter(DateTime.UtcNow.Add(validityPeriod));
@@ -180,7 +180,7 @@ namespace SanteDB.Security.Certs.BouncyCastle
             certificateGenerator.AddExtension(X509Extensions.AuthorityKeyIdentifier.Id, false, new AuthorityKeyIdentifier(SubjectPublicKeyInfoFactory.CreateSubjectPublicKeyInfo(issuerKeyPair.Public), new GeneralNames(new GeneralName(issuerCertificate.SubjectDN)), issuerCertificate.SerialNumber));
             certificateGenerator.AddExtension(X509Extensions.SubjectKeyIdentifier.Id, false, new AuthorityKeyIdentifier(SubjectPublicKeyInfoFactory.CreateSubjectPublicKeyInfo(csrRequest.GetPublicKey())));
 
-            return certificateGenerator.Generate(issuerKeyPair.Private);
+            return certificateGenerator.Generate(new Asn1SignatureFactory(csrRequest.SignatureAlgorithm.Algorithm.Id, issuerKeyPair.Private));
 
         }
 
