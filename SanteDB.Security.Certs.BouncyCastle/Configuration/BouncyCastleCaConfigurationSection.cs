@@ -17,6 +17,7 @@
  *
  */
 using SanteDB.OrmLite.Configuration;
+using System;
 using System.Xml.Serialization;
 
 namespace SanteDB.Security.Certs.BouncyCastle.Configuration
