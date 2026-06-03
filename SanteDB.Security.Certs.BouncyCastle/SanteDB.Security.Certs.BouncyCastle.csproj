@@ -1,27 +1,10 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-
-  <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(VersionNumber)' == ''">
-    <VersionNumber>3.0-debug</VersionNumber>
-  </PropertyGroup>
-  <Choose>
-    <When Condition="$(SolutionName.Contains('-nuget'))">
-      <ItemGroup>
-        <PackageReference Include="SanteDB.Core.Api" Version="$(VersionNumber)" />
-        <PackageReference Include="SanteDB.Core.Applets" Version="$(VersionNumber)" />
-        <PackageReference Include="SanteDB.OrmLite" Version="$(VersionNumber)" />
-      </ItemGroup>
-    </When>
-    <Otherwise>
-      <ItemGroup>
-        <ProjectReference Include="..\..\santedb-api\SanteDB.Core.Api\SanteDB.Core.Api.csproj" />
-        <ProjectReference Include="..\..\santedb-applets\SanteDB.Core.Applets\SanteDB.Core.Applets.csproj" />
-        <ProjectReference Include="..\..\santedb-orm\SanteDB.OrmLite\SanteDB.OrmLite.csproj" />
-      </ItemGroup>
-    </Otherwise>
-  </Choose>
+	<PropertyGroup Condition="'$(VersionNumber)' == ''">
+		<VersionNumber>3.0-debug</VersionNumber>
+	</PropertyGroup>
+	<PropertyGroup>
+		<TargetFrameworks>net10.0;net48;netstandard2.0</TargetFrameworks>
+	</PropertyGroup>
   <PropertyGroup>
     <PackageId>SanteDB.Security.Certs.BouncyCastle</PackageId>
     <Title>SanteDB.Security.Certs.BouncyCastle</Title>
@@ -35,7 +18,6 @@
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>
     <IncludeSymbols>true</IncludeSymbols>
     <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
-    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <Product>SanteDB</Product>
     <Copyright>Copyright (C) 2022 SanteSuite Contributors (See: NOTICES)</Copyright>
     <Company>SanteSuite Contributors</Company>
@@ -43,12 +25,28 @@
     <PackageProjectUrl>http://santesuite.org</PackageProjectUrl>
     <RootNamespace>SanteDB.Security.Certs.BouncyCastle</RootNamespace>
   </PropertyGroup>
+	<Choose>
+		<When Condition="$(SolutionName.Contains('-nuget'))">
+			<ItemGroup>
+				<PackageReference Include="SanteDB.Core.Api" Version="$(VersionNumber)" />
+				<PackageReference Include="SanteDB.Core.Applets" Version="$(VersionNumber)" />
+				<PackageReference Include="SanteDB.OrmLite" Version="$(VersionNumber)" />
+			</ItemGroup>
+		</When>
+		<Otherwise>
+			<ItemGroup>
+				<ProjectReference Include="..\..\santedb-api\SanteDB.Core.Api\SanteDB.Core.Api.csproj" />
+				<ProjectReference Include="..\..\santedb-applets\SanteDB.Core.Applets\SanteDB.Core.Applets.csproj" />
+				<ProjectReference Include="..\..\santedb-orm\SanteDB.OrmLite\SanteDB.OrmLite.csproj" />
+			</ItemGroup>
+		</Otherwise>
+	</Choose>
   <ItemGroup>
     <None Include="..\..\SanteDB.licenseheader" Link="SanteDB.licenseheader" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Portable.BouncyCastle" Version="1.9.0" />
+    <PackageReference Include="BouncyCastle.Cryptography" Version="[2.6.2,2.7)" />
   </ItemGroup>
 
 </Project>

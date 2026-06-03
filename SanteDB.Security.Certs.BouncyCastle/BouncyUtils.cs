@@ -147,7 +147,7 @@ namespace SanteDB.Security.Certs.BouncyCastle
                         foreach (DerObjectIdentifier oid in extension.ExtensionOids)
                         {
                             var ext = extension.GetExtension(oid);
-                            var value = ext.GetParsedValue();
+                            var value = ext.GetParsedValue() as Asn1Encodable;
                             certificateGenerator.AddExtension(oid, ext.IsCritical, value);
 
                             if (oid.Equals(X509Extensions.BasicConstraints) && value is BasicConstraints bc)
@@ -246,7 +246,8 @@ namespace SanteDB.Security.Certs.BouncyCastle
         {
             var randomGenerator = new CryptoApiRandomGenerator();
             var random = new SecureRandom(randomGenerator);
-            var pfx = new Pkcs12Store();
+            //The key alg, cert alg and use der settings are derived from the obsolete parameterless ctor
+            var pfx = new Pkcs12StoreBuilder().SetKeyAlgorithm(PkcsObjectIdentifiers.PbeWithShaAnd3KeyTripleDesCbc).SetCertAlgorithm(PkcsObjectIdentifiers.PbewithShaAnd40BitRC2Cbc).SetUseDerEncoding(false).Build();
             var certificateEntry = new X509CertificateEntry(certificate);
             pfx.SetCertificateEntry(friendlyName, certificateEntry);
             if (privateKey != null)
